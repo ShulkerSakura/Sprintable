@@ -1,8 +1,44 @@
+# Build outputs
 /build/
 /dist/
 *.class
 *.jar
 *.zip
 *.log
+
+# IDE / OS
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
 .DS_Store
 Thumbs.db
+
+# MCP generated / official Minecraft content if an MCP workspace is placed here
+/bin/
+/reobf/
+/temp/
+/logs/
+/docs/javadoc/
+/eclipse/
+/conf/
+/runtime/
+/forge/
+
+# Official Minecraft jars and resources must not be committed
+/jars/**
+!/jars/
+!/jars/server.properties
+!/jars/server.dat
+/mcp*/jars/**
+!/mcp*/jars/server.properties
+!/mcp*/jars/server.dat
+**/minecraft.jar
+**/minecraft_server.jar
+**/minecraft_server.jar.backup
+**/resources/
+
+# Keep dependency jars intentionally vendored for this legacy MCP/Forge target
+!/lib/
+!/lib/*.jar

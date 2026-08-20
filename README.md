@@ -1,74 +1,90 @@
 # Sprintable
 
-Sprintable is a small Minecraft 1.1 ModLoader mod that adds a dedicated sprint key binding.
+Sprintable is a small Forge/FML mod for Minecraft 1.3.2 that adds a dedicated sprint key binding.
 
-The default key is Left Control. Pressing it triggers vanilla sprinting once, the same way double-tapping forward does. Releasing the key does not forcibly cancel sprinting; vanilla movement rules decide when sprinting stops.
+The default key is Left Control. Holding it while moving forward triggers vanilla sprinting, the same way double-tapping forward does. Vanilla movement rules still decide when sprinting is allowed or cancelled.
 
 ## Features
 
 - Adds a Sprint key binding to the Controls screen
 - Saves the key binding through vanilla `options.txt`
-- Supports English and Chinese labels in the Controls screen
-- Does not edit vanilla source files
-- Works as a ModLoader jar/zip mod for Minecraft 1.1
+- Supports English, Simplified Chinese, and Traditional Chinese labels
+- Loads translations from bundled `.lang` files
+- Does not edit vanilla source files or ship official Minecraft classes
 
-## Source Layout
+## Repository Layout
 
 ```text
 Sprintable/
+├── assets/
+│   └── logo.png
+├── jars/
+│   └── server.properties
+├── lib/
+│   ├── argo-2.25.jar
+│   ├── asm-all-4.0.jar
+│   └── guava-12.0.1.jar
 ├── src/
-│   └── mod_Sprintable.java
+│   ├── common/neko/shulker/sprintable/
+│   │   ├── lang/*.lang
+│   │   ├── mcmod.info
+│   │   ├── CommonProxy.java
+│   │   ├── SprintTickHandler.java
+│   │   └── sprintableMod.java
+│   └── minecraft/neko/shulker/sprintable/
+│       └── ClientProxy.java
 ├── build.ps1
-├── build.sh
-├── README.md
-└── LICENSE
+└── README.md
 ```
 
-Minecraft 1.1 ModLoader loads runtime mod classes from the default package, so the source class is named `mod_Sprintable` and the reobfuscated output is `mod_Sprintable.class` at the root of the jar.
+`lib/` is intentionally vendored for this legacy MCP/Forge target. Official Minecraft jars, resources, generated classes, and decompiled vanilla sources are excluded by `.gitignore`.
 
 ## Build Requirements
 
-- A working MCP 5.6 / Minecraft 1.1 workspace with ModLoader and Forge already installed
-- JDK 6 available on `PATH` (`javac` and `jar` commands)
-- Windows PowerShell for `build.ps1`, or a POSIX shell for `build.sh`
+- A prepared MCP 7.2 + Forge 4.3.5.318 workspace for Minecraft 1.3.2
+- JDK 6 or JDK 8 available for MCP scripts
+- Windows PowerShell
 
-The scripts do not include MCP, Minecraft, ModLoader, or Forge. They copy `src/mod_Sprintable.java` into an existing MCP workspace, run MCP recompile/reobfuscate, then package the reobfuscated class.
+By default the build script expects the MCP workspace at `../mcp72`, next to this repository.
 
 ## Build
 
-From this repository directory, with MCP located at `../mcp56`:
+```powershell
+cd C:\path\to\Sprintable
+.\build.ps1
+```
+
+Use a custom MCP path:
 
 ```powershell
-./build.ps1
+.\build.ps1 -McpDir "C:\path\to\mcp72"
 ```
 
-Or explicitly pass the MCP path:
+If `reobfuscate.bat` has already been run and you only want to package the jar:
 
 ```powershell
-./build.ps1 -McpDir "C:\\path\\to\\mcp56"
+.\build.ps1 -SkipMcpBuild
 ```
 
-Linux / macOS:
-
-```sh
-chmod +x ./build.sh
-./build.sh ../mcp56
-```
-
-The output is:
+The output is written to:
 
 ```text
-dist/Sprintable-1.0.0-mc1.1.jar
+dist/sprintable_1.3.2_1.0.0_forge.jar
+```
+
+The jar contains only:
+
+```text
+mcmod.info
+logo.png
+assets/sprintable/lang/*.lang
+neko/shulker/sprintable/*.class
 ```
 
 ## Installation
 
-Use a Minecraft 1.1 client with ModLoader installed.
-
-If your launcher supports loading old jar mods from a separate classpath or `modify` directory, put the built jar there.
-
-For a classic manual jar install, copy `mod_Sprintable.class` from the built jar into `minecraft.jar` after installing ModLoader / Forge, then remove `META-INF` if needed.
+Use a Minecraft 1.3.2 client with Forge 4.3.5.318 installed. Copy the built jar into `.minecraft/mods/` and start the game.
 
 ## Notes
 
-This branch targets Minecraft 1.1 ModLoader. It is not the same codebase as newer Forge/FML versions of Sprintable.
+This branch targets Minecraft 1.3.2 Forge/FML. It replaces the older Minecraft 1.1 ModLoader implementation from previous versions.

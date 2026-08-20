@@ -1,0 +1,17 @@
+[
+  {
+    "modid": "sprintable",
+    "name": "Sprintable",
+    "description": "Adds a dedicated sprint key (default LCTRL) to Minecraft 1.3.2. Hold the key while moving forward to sprint, just like double-tapping W.",
+    "version": "1.0.0",
+    "url": "",
+    "updateUrl": "",
+    "authorList": [
+      "shulker"
+    ],
+    "credits": "Built with MCP 7.2 + Forge 4.3.5.318",
+    "logoFile": "logo.png",
+    "parent": "",
+    "useDependencyInformation": "false"
+  }
+]
