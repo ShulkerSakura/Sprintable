@@ -1,8 +1,43 @@
+# Build outputs
 /build/
 /dist/
 *.class
 *.jar
 *.zip
 *.log
+
+# Local MCP workspace
+/mcp62/
+/mcp*/
+/bin/
+/reobf/
+/temp/
+/logs/
+/docs/javadoc/
+/eclipse/
+/conf/
+/runtime/
+/forge/
+
+# Minecraft and Forge runtime data
+/jars/
+**/minecraft.jar
+**/minecraft_server.jar
+**/minecraft_server.jar.backup
+**/ForgeModLoader-*.log
+**/options.txt
+**/servers.dat
+**/stats/
+
+# IDE and OS files
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
 .DS_Store
 Thumbs.db
+
+# Python bytecode
+__pycache__/
+*.py[cod]

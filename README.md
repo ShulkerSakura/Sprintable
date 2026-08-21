@@ -1,74 +1,123 @@
 # Sprintable
 
-Sprintable is a small Minecraft 1.1 ModLoader mod that adds a dedicated sprint key binding.
-
-The default key is Left Control. Pressing it triggers vanilla sprinting once, the same way double-tapping forward does. Releasing the key does not forcibly cancel sprinting; vanilla movement rules decide when sprinting stops.
+Sprintable is a client-side mod for Minecraft 1.2.5 Forge 3.4.9.171 that adds a dedicated sprint key to the game.
 
 ## Features
 
-- Adds a Sprint key binding to the Controls screen
-- Saves the key binding through vanilla `options.txt`
-- Supports English and Chinese labels in the Controls screen
-- Does not edit vanilla source files
-- Works as a ModLoader jar/zip mod for Minecraft 1.1
+- Registers a `Sprint` key binding in the Controls menu, defaulting to Left Ctrl.
+- Starts sprinting while the key is held and the player is moving forward.
+- Includes `en_US`, `zh_CN`, and `zh_TW` localizations.
+- Uses the ModLoader/BaseMod compatibility path and FML tick handlers available in Minecraft 1.2.5.
+- Does not require changes to vanilla Minecraft source files.
 
-## Source Layout
+## Repository Layout
 
 ```text
 Sprintable/
-├── src/
-│   └── mod_Sprintable.java
+├── src/main/java/neko/shulker/sprintable/
+│   ├── mod_Sprintable.java
+│   └── SprintableTickHandler.java
+├── src/main/resources/
+│   ├── mcmod.info
+│   ├── logo.png
+│   └── assets/sprintable/lang/
+│       ├── en_US.lang
+│       ├── zh_CN.lang
+│       └── zh_TW.lang
 ├── build.ps1
 ├── build.sh
-├── README.md
-└── LICENSE
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
 
-Minecraft 1.1 ModLoader loads runtime mod classes from the default package, so the source class is named `mod_Sprintable` and the reobfuscated output is `mod_Sprintable.class` at the root of the jar.
+MCP, Minecraft, Forge, runtime logs, and build output are not included in this repository. The build scripts use an adjacent `mcp62` directory by default.
 
-## Build Requirements
+## Requirements
 
-- A working MCP 5.6 / Minecraft 1.1 workspace with ModLoader and Forge already installed
-- JDK 6 available on `PATH` (`javac` and `jar` commands)
-- Windows PowerShell for `build.ps1`, or a POSIX shell for `build.sh`
+Prepare an MCP 6.2 workspace with Minecraft 1.2.5 Forge 3.4.9.171 already installed.
 
-The scripts do not include MCP, Minecraft, ModLoader, or Forge. They copy `src/mod_Sprintable.java` into an existing MCP workspace, run MCP recompile/reobfuscate, then package the reobfuscated class.
+- Windows: PowerShell, a JDK, and the `jar` command must be available.
+- Linux: a POSIX shell, a JDK, and the `jar` command must be available.
+- The MCP workspace must provide `recompile` and `reobfuscate` scripts.
+- Minecraft and Forge files must be obtained and prepared legally by the user.
 
-## Build
+This repository does not distribute Minecraft, Forge, MCP, or their dependencies.
 
-From this repository directory, with MCP located at `../mcp56`:
+## Build on Windows
 
-```powershell
-./build.ps1
-```
-
-Or explicitly pass the MCP path:
-
-```powershell
-./build.ps1 -McpDir "C:\\path\\to\\mcp56"
-```
-
-Linux / macOS:
-
-```sh
-chmod +x ./build.sh
-./build.sh ../mcp56
-```
-
-The output is:
+Default directory layout:
 
 ```text
-dist/Sprintable-1.0.0-mc1.1.jar
+workspace/
+├── Sprintable/
+└── mcp62/
+```
+
+From the `Sprintable` directory, run:
+
+```powershell
+.\build.ps1
+```
+
+To specify an MCP directory and mod version:
+
+```powershell
+.\build.ps1 -McpDir "C:\path\to\mcp62" -Version "1.0.0"
+```
+
+If PowerShell blocks script execution, bypass the policy for the current process only:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+.\build.ps1
+```
+
+## Build on Linux
+
+Use the same default directory layout. From the `Sprintable` directory, run:
+
+```sh
+chmod +x build.sh
+./build.sh
+```
+
+To specify an MCP directory and mod version:
+
+```sh
+VERSION=1.0.0 ./build.sh /path/to/mcp62
+```
+
+## Build Process
+
+The build scripts perform the following steps:
+
+1. Copy the repository Java sources to MCP's `src/minecraft/neko/shulker/sprintable/` directory.
+2. Run MCP `recompile`.
+3. Run MCP `reobfuscate`.
+4. Assemble the reobfuscated classes and resources into a complete mod jar.
+5. Write the result to `dist/Sprintable-1.0.0-mc1.2.5.jar`.
+
+The resulting jar has this structure:
+
+```text
+mcmod.info
+logo.png
+assets/sprintable/lang/*.lang
+neko/shulker/sprintable/mod_Sprintable.class
+neko/shulker/sprintable/SprintableTickHandler.class
 ```
 
 ## Installation
 
-Use a Minecraft 1.1 client with ModLoader installed.
+Place the jar generated in `dist/` into the `mods` directory used by a Minecraft 1.2.5 Forge client, then start the client. Sprintable's name, version, authors, description, and icon should appear in the Forge Mod List.
 
-If your launcher supports loading old jar mods from a separate classpath or `modify` directory, put the built jar there.
+## Development
 
-For a classic manual jar install, copy `mod_Sprintable.class` from the built jar into `minecraft.jar` after installing ModLoader / Forge, then remove `META-INF` if needed.
+1. Edit files in `src/main/java` or `src/main/resources`.
+2. Run the appropriate build script again.
+3. Do not commit generated files from the external MCP workspace, including `bin`, `reobf`, logs, and runtime data.
 
-## Notes
+## License
 
-This branch targets Minecraft 1.1 ModLoader. It is not the same codebase as newer Forge/FML versions of Sprintable.
+This project is licensed under the terms in [LICENSE](LICENSE).

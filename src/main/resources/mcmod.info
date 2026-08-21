@@ -1,0 +1,18 @@
+[
+{
+  "modid" : "mod_Sprintable",
+  "name" : "Sprintable",
+  "version" : "1.0.0",
+  "url" : "https://github.com/ShulkerSakura/Sprintable",
+  "credits" : "Add sprint key to old minecraft",
+  "authors": [
+    "NyaShulker"
+  ],
+  "description": "Add sprint key to old minecraft",
+  "logoFile" : "/logo.png",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots": [
+  ]
+}
+]
