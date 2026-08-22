@@ -25,6 +25,7 @@ Thumbs.db
 /conf/
 /runtime/
 /forge/
+/mcp*/
 
 # Official Minecraft jars and resources must not be committed
 /jars/**

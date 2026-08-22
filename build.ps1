@@ -1,5 +1,5 @@
 param(
-    [string]$McpDir = "..\mcp72",
+    [string]$McpDir = "..\mcp726a",
     [string]$Version = "1.0.0",
     [string]$JavaHome = $env:JAVA_HOME,
     [switch]$SkipMcpBuild
@@ -10,14 +10,18 @@ $ErrorActionPreference = "Stop"
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $McpDir = [System.IO.Path]::GetFullPath((Join-Path $Root $McpDir))
 $ModPackage = "neko\shulker\sprintable"
+$JarPackage = "neko/shulker/sprintable"
 $Dist = Join-Path $Root "dist"
-$Jar = Join-Path $Dist "sprintable_1.3.2_$Version`_forge.jar"
+$Jar = Join-Path $Dist "sprintable_1.4.7_$Version`_forge.jar"
 
-$SourceCommon = Join-Path $Root "src\common\$ModPackage"
-$SourceClient = Join-Path $Root "src\minecraft\$ModPackage"
-$McpSourceCommon = Join-Path $McpDir "src\common\$ModPackage"
-$McpSourceClient = Join-Path $McpDir "src\minecraft\$ModPackage"
+$Source = Join-Path $Root "src\minecraft\$ModPackage"
+$McpSource = Join-Path $McpDir "src\minecraft\$ModPackage"
 $ReobfPackage = Join-Path $McpDir "reobf\minecraft\$ModPackage"
+
+$Classes = @(
+    "SprintableMod.class",
+    "SprintableTickHandler.class"
+)
 
 function Require-File([string]$Path) {
     if (!(Test-Path $Path)) {
@@ -49,15 +53,13 @@ if ($JavaHome) {
     $env:PATH = (Join-Path $JavaHome "bin") + ";" + $env:PATH
 }
 
-Require-File (Join-Path $SourceCommon "sprintableMod.java")
-Require-File (Join-Path $SourceCommon "CommonProxy.java")
-Require-File (Join-Path $SourceCommon "SprintTickHandler.java")
-Require-File (Join-Path $SourceCommon "mcmod.info")
-Require-File (Join-Path $SourceClient "ClientProxy.java")
-Require-File (Join-Path $Root "assets\logo.png")
+Require-File (Join-Path $Source "SprintableMod.java")
+Require-File (Join-Path $Source "SprintableTickHandler.java")
+Require-File (Join-Path $Source "mcmod.info")
+Require-File (Join-Path $Source "logo.png")
 
-Copy-CleanDirectory $SourceCommon $McpSourceCommon
-Copy-CleanDirectory $SourceClient $McpSourceClient
+# MCP 726a 已由 FML 合并为单一 src/minecraft 源码树，客户端与服务端共用
+Copy-CleanDirectory $Source $McpSource
 
 if (!$SkipMcpBuild) {
     Push-Location $McpDir
@@ -77,10 +79,9 @@ if (!$SkipMcpBuild) {
     }
 }
 
-Require-File (Join-Path $ReobfPackage "ClientProxy.class")
-Require-File (Join-Path $ReobfPackage "CommonProxy.class")
-Require-File (Join-Path $ReobfPackage "sprintableMod.class")
-Require-File (Join-Path $ReobfPackage "SprintTickHandler.class")
+foreach ($class in $Classes) {
+    Require-File (Join-Path $ReobfPackage $class)
+}
 
 New-Item -ItemType Directory -Force $Dist | Out-Null
 if (Test-Path $Jar) {
@@ -91,15 +92,14 @@ Add-Type -AssemblyName System.IO.Compression
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $zip = [System.IO.Compression.ZipFile]::Open($Jar, [System.IO.Compression.ZipArchiveMode]::Create)
 try {
-    Add-ZipFile $zip (Join-Path $SourceCommon "mcmod.info") "mcmod.info"
-    Add-ZipFile $zip (Join-Path $Root "assets\logo.png") "logo.png"
+    Add-ZipFile $zip (Join-Path $Source "mcmod.info") "mcmod.info"
+    Add-ZipFile $zip (Join-Path $Source "logo.png") "logo.png"
 
-    Add-ZipFile $zip (Join-Path $ReobfPackage "ClientProxy.class") "neko/shulker/sprintable/ClientProxy.class"
-    Add-ZipFile $zip (Join-Path $ReobfPackage "CommonProxy.class") "neko/shulker/sprintable/CommonProxy.class"
-    Add-ZipFile $zip (Join-Path $ReobfPackage "sprintableMod.class") "neko/shulker/sprintable/sprintableMod.class"
-    Add-ZipFile $zip (Join-Path $ReobfPackage "SprintTickHandler.class") "neko/shulker/sprintable/SprintTickHandler.class"
+    foreach ($class in $Classes) {
+        Add-ZipFile $zip (Join-Path $ReobfPackage $class) "$JarPackage/$class"
+    }
 
-    foreach ($lang in Get-ChildItem (Join-Path $SourceCommon "lang") -Filter "*.lang") {
+    foreach ($lang in Get-ChildItem (Join-Path $Source "assets\sprintable\lang") -Filter "*.lang") {
         Add-ZipFile $zip $lang.FullName ("assets/sprintable/lang/" + $lang.Name)
     }
 }
